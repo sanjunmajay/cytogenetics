@@ -1,0 +1,966 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  BookOpen, Building2, Dna, Library, Activity, Bug, Scissors, 
+  PlusCircle, Ghost, ArrowRightLeft, Pill, ShieldAlert, RefreshCw, 
+  Microscope, Users, Flame, Castle, Languages, UserCheck, Star, 
+  Heart, ChevronRight, ChevronLeft, Menu, X, Search, FileText, 
+  ArrowDown, Cloud, Factory, Zap, Thermometer, Stethoscope, 
+  AlertTriangle, Shield, ScrollText, Droplets, Mountain
+} from 'lucide-react';
+
+// --- STORY DATA ---
+const storyData = [
+  {
+    id: 1,
+    title: "Welcome to the Cell City",
+    icon: Building2,
+    color: "bg-blue-500",
+    content: [
+      "Once upon a time, inside the human body, there existed billions of tiny cities called cells.",
+      "Every cell had:",
+      { type: "list", items: ["factories", "transport systems", "communication centers", "power stations", "and a very important building called the Nucleus."] },
+      "Inside the nucleus lived the most precious thing in the entire city:",
+      { type: "highlight", text: "The Library of Life — DNA" },
+      "DNA was like an enormous instruction manual that told every cell:",
+      { type: "list", items: ["who it was,", "what work it should do,", "when to grow,", "and when to die."] },
+      "But the DNA library was too long and tangled to manage directly. So nature invented librarians called:",
+      { type: "title", text: "Chromosomes" }
+    ]
+  },
+  {
+    id: 2,
+    title: "Meet the Chromosomes",
+    icon: Users,
+    color: "bg-indigo-500",
+    content: [
+      "Chromosomes were organized bundles of DNA.",
+      "Humans normally had:",
+      { type: "list", items: ["46 chromosomes", "arranged in 23 pairs"] },
+      "Each chromosome had a partner. Imagine 23 married couples living peacefully inside the nucleus.",
+      "Among them:",
+      { type: "list", items: ["22 were ordinary working couples (autosomes)", "1 pair determined sex (XX or XY)"] },
+      "The chromosomes carried thousands of tiny instruction paragraphs called genes. Each gene had a job:",
+      { type: "list", items: ["making proteins,", "controlling growth,", "repairing damage,", "helping immunity,", "and many more."] },
+      "For many years, the chromosome families lived in harmony. Until one day… some chromosomes started developing worries.",
+      "These worries were called:",
+      { type: "highlight", text: "Cytogenetic Abnormalities" }
+    ]
+  },
+  {
+    id: 3,
+    title: "Understanding Chromosome Anatomy",
+    icon: Dna,
+    color: "bg-purple-500",
+    content: [
+      "Before understanding their worries, we must understand the chromosomes themselves.",
+      "Each chromosome looked like a little \"X\". It had:",
+      { type: "list", items: ["a short arm called p", "a long arm called q", "a middle joining point called the centromere"] },
+      "You can imagine it as a person:",
+      { type: "list", items: ["left arm = p arm", "right arm = q arm", "waist = centromere"] },
+      "Scientists gave addresses to every chromosome location. For example:",
+      { type: "list", items: ["17p13", "9q34", "14q32"] },
+      "These were like house addresses inside chromosome city."
+    ]
+  },
+  {
+    id: 4,
+    title: "The Chromosomes Become Sick",
+    icon: Bug,
+    color: "bg-rose-500",
+    content: [
+      "Normally, chromosomes copied themselves carefully. But sometimes mistakes happened.",
+      "A chromosome could:",
+      { type: "list", items: ["lose a piece,", "gain an extra piece,", "swap material,", "flip upside down,", "or even disappear completely."] },
+      "These mistakes became the foundation of many blood cancers. And this is where the science of:",
+      { type: "title", text: "Cytogenetics" },
+      "was born.",
+      "Cytogenetics is simply:",
+      { type: "quote", text: "“The study of chromosomes, their structure, number, and abnormalities.”" }
+    ]
+  },
+  {
+    id: 5,
+    title: "The First Worry: Missing Pieces",
+    icon: Scissors,
+    color: "bg-amber-500",
+    content: [
+      "One day, Chromosome 5 noticed something terrible.",
+      "A portion of his long arm was gone.",
+      "He cried:",
+      { type: "quote", text: "“I lost part of myself!”" },
+      "Scientists called this:",
+      { type: "highlight", text: "del(5q)" },
+      "This meant:",
+      { type: "list", items: ["deletion on chromosome 5", "long arm (q)"] },
+      "This abnormality became famous in:",
+      { type: "list", items: ["MDS", "AML"] },
+      "Some patients with this abnormality responded very well to a medicine called lenalidomide."
+    ]
+  },
+  {
+    id: 6,
+    title: "The Second Worry: Extra Chromosomes",
+    icon: PlusCircle,
+    color: "bg-emerald-500",
+    content: [
+      "Another day, the nucleus became overcrowded.",
+      "Chromosome 8 entered the room and shouted:",
+      { type: "quote", text: "“There’s an extra copy of me!”" },
+      "Scientists called this:",
+      { type: "highlight", text: "+8" },
+      "This was called:",
+      { type: "title", text: "Trisomy 8" },
+      "Now there were:",
+      { type: "list", items: ["3 copies instead of 2."] },
+      "Too much genetic material can be dangerous. This abnormality often appeared in:",
+      { type: "list", items: ["AML", "MDS"] }
+    ]
+  },
+  {
+    id: 7,
+    title: "The Disappearing Chromosome",
+    icon: Ghost,
+    color: "bg-slate-400",
+    content: [
+      "One morning, the cell counted everyone.",
+      "1…2…3…",
+      "But Chromosome 7 was missing. Everyone panicked.",
+      "Scientists called this:",
+      { type: "highlight", text: "-7" },
+      "This meant:",
+      { type: "list", items: ["Monosomy 7", "One copy lost completely"] },
+      "This became known as a very serious abnormality in:",
+      { type: "list", items: ["AML", "MDS"] }
+    ]
+  },
+  {
+    id: 8,
+    title: "The Great Chromosome Exchange",
+    icon: ArrowRightLeft,
+    color: "bg-fuchsia-500",
+    content: [
+      "One of the biggest events in chromosome history happened between:",
+      { type: "list", items: ["Chromosome 9", "and", "Chromosome 22"] },
+      "One day they accidentally exchanged pieces. Scientists called this:",
+      { type: "highlight", text: "t(9;22)(q34;q11)" },
+      "This strange exchange created a dangerous fusion called:",
+      { type: "title", text: "BCR-ABL1" },
+      "The fusion acted like a permanently switched-on engine. The blood cells began multiplying uncontrollably.",
+      "And thus was born:",
+      { type: "highlight", text: "Chronic Myeloid Leukemia (CML)" },
+      "This abnormal chromosome became famous as:",
+      { type: "title", text: "The Philadelphia Chromosome" }
+    ]
+  },
+  {
+    id: 9,
+    title: "The Hero Medicines",
+    icon: Pill,
+    color: "bg-cyan-500",
+    content: [
+      "For many years, CML was very dangerous.",
+      "Then scientists created special medicines called:",
+      { type: "list", items: ["Imatinib", "Dasatinib", "Nilotinib"] },
+      "These drugs targeted the BCR-ABL1 fusion directly.",
+      "For the first time:",
+      { type: "list", items: ["a cancer was controlled by targeting its cytogenetic abnormality."] },
+      "The chromosomes finally felt hopeful."
+    ]
+  },
+  {
+    id: 10,
+    title: "The Emergency of Chromosome 15 and 17",
+    icon: ShieldAlert,
+    color: "bg-rose-500",
+    content: [
+      "Another dangerous accident occurred between:",
+      { type: "list", items: ["Chromosome 15", "Chromosome 17"] },
+      "They exchanged pieces:",
+      { type: "highlight", text: "t(15;17)" },
+      "This created:",
+      { type: "title", text: "PML-RARA fusion" },
+      "The result was:",
+      { type: "highlight", text: "Acute Promyelocytic Leukemia (APL)" },
+      "This leukemia caused dangerous bleeding problems. Patients could die very quickly if untreated.",
+      "But doctors discovered:",
+      { type: "list", items: ["ATRA", "Arsenic trioxide"] },
+      "These therapies transformed APL from one of the deadliest leukemias into one of the most curable."
+    ]
+  },
+  {
+    id: 11,
+    title: "The Inverted Chromosome",
+    icon: RefreshCw,
+    color: "bg-teal-500",
+    content: [
+      "One chromosome became confused.",
+      "A piece broke off… turned around… and reattached backwards.",
+      "Scientists called this:",
+      { type: "highlight", text: "inv(16)" },
+      "This inversion became important in AML.",
+      "Interestingly:",
+      { type: "list", items: ["some inversions actually carried a better prognosis."] },
+      "Not all chromosome worries were equally dangerous."
+    ]
+  },
+  {
+    id: 12,
+    title: "The Chromosome Detectives",
+    icon: Microscope,
+    color: "bg-indigo-500",
+    content: [
+      "Doctors needed ways to investigate chromosome problems. So they created special detective teams.",
+      { type: "title", text: "Detective Team 1 — Karyotyping" },
+      "This was the oldest detective. It looked at chromosomes under a microscope. It could:",
+      { type: "list", items: ["count chromosomes,", "see large abnormalities,", "identify translocations."] },
+      "Normal reports looked like: Female: 46,XX / Male: 46,XY",
+      { type: "title", text: "Detective Team 2 — FISH" },
+      "FISH used glowing fluorescent probes. It searched for specific abnormalities very quickly. FISH became extremely important in:",
+      { type: "list", items: ["CML", "CLL", "Myeloma", "AML"] },
+      { type: "title", text: "Detective Team 3 — PCR" },
+      "PCR was even more sensitive. It could detect tiny traces of disease. Even when leukemia tried hiding, PCR could still find it.",
+      "This became important for:",
+      { type: "highlight", text: "Minimal Residual Disease (MRD)" }
+    ]
+  },
+  {
+    id: 13,
+    title: "The Story of Clones",
+    icon: Activity,
+    color: "bg-violet-500",
+    content: [
+      "Inside leukemia, not all cells were identical.",
+      "Some cells developed new abnormalities over time.",
+      "These abnormal families were called:",
+      { type: "title", text: "Clones" },
+      "As cancer evolved:",
+      { type: "list", items: ["new clones emerged,", "stronger clones survived,", "resistant clones expanded."] },
+      "This process became known as:",
+      { type: "highlight", text: "Clonal Evolution" }
+    ]
+  },
+  {
+    id: 14,
+    title: "The Dangerous Complex Karyotype",
+    icon: Flame,
+    color: "bg-orange-500",
+    content: [
+      "Sometimes chromosomes became severely disorganized.",
+      "Multiple abnormalities appeared together.",
+      "Scientists called this:",
+      { type: "title", text: "Complex Karyotype" },
+      "Usually:",
+      { type: "list", items: ["3 or more abnormalities"] },
+      "This often meant:",
+      { type: "list", items: ["aggressive disease,", "poor prognosis,", "treatment resistance."] },
+      "The chromosome city became chaotic."
+    ]
+  },
+  {
+    id: 15,
+    title: "The Blood Cancer Kingdoms",
+    icon: Castle,
+    color: "bg-blue-600",
+    content: [
+      "Different blood cancers had different chromosome stories.",
+      { type: "title", text: "CML" },
+      "Main character:",
+      { type: "list", items: ["Philadelphia chromosome", "t(9;22)"] },
+      { type: "title", text: "APL" },
+      "Main character:",
+      { type: "list", items: ["t(15;17)"] },
+      { type: "title", text: "AML" },
+      "Important citizens:",
+      { type: "list", items: ["t(8;21)", "inv(16)", "monosomy 7", "del5q"] },
+      { type: "title", text: "CLL" },
+      "Important worries:",
+      { type: "list", items: ["del17p", "trisomy 12"] },
+      { type: "title", text: "Multiple Myeloma" },
+      "Important abnormalities:",
+      { type: "list", items: ["del17p", "t(4;14)"] }
+    ]
+  },
+  {
+    id: 16,
+    title: "Learning the Chromosome Language",
+    icon: Languages,
+    color: "bg-slate-700",
+    content: [
+      "Scientists eventually created a universal language called:",
+      { type: "title", text: "ISCN Nomenclature" },
+      "At first it looked terrifying. Example:",
+      { type: "highlight", text: "46,XY,t(9;22)(q34;q11)[20]" },
+      "But this simply meant:",
+      { type: "list", items: ["Male", "46 chromosomes", "Philadelphia chromosome present", "Seen in 20 cells"] },
+      "Once decoded, the language became logical."
+    ]
+  },
+  {
+    id: 17,
+    title: "The Job of a Clinical Data Abstractor",
+    icon: UserCheck,
+    color: "bg-emerald-600",
+    content: [
+      "Now enters YOU. You are the observer of the chromosome world.",
+      "Your role is to:",
+      { type: "list", items: ["read reports,", "recognize abnormalities,", "capture prognostic findings,", "identify treatment-defining markers,", "document molecular monitoring,", "and organize the entire story of the patient’s disease."] },
+      "You are not merely entering data.",
+      { type: "highlight", text: "You are translating the language of chromosomes into meaningful clinical information." }
+    ]
+  },
+  {
+    id: 18,
+    title: "The Most Important Lesson",
+    icon: Star,
+    color: "bg-amber-500",
+    content: [
+      "In solid tumors:",
+      { type: "list", items: ["mutations are often additional information."] },
+      "But in liquid tumors:",
+      { type: "highlight", text: "cytogenetics may DEFINE the disease itself." },
+      "A single translocation can:",
+      { type: "list", items: ["diagnose leukemia,", "determine prognosis,", "guide therapy,", "predict relapse,", "and decide transplant eligibility."] },
+      "That is why cytogenetics is the backbone of hematologic oncology."
+    ]
+  },
+  {
+    id: 19,
+    title: "Final Message",
+    icon: Heart,
+    color: "bg-rose-500",
+    content: [
+      "The story of cytogenetics is ultimately the story of:",
+      { type: "list", items: ["order becoming disorder,", "chromosomes making mistakes,", "cells losing control,", "and science learning how to read those mistakes."] },
+      "Once you understand:",
+      { type: "list", items: ["chromosome structure,", "translocations,", "deletions,", "karyotypes,", "FISH,", "and disease-defining abnormalities,"] },
+      "the reports stop looking frightening. Instead, they become stories.",
+      "And every cytogenetic report becomes:",
+      { type: "quote", text: "“A conversation between chromosomes trying to tell you what disease they have become.”" }
+    ]
+  }
+];
+
+// --- ANIMATION CONTROLLER ---
+const AnimatedScene = ({ maxSteps, interval, children }) => {
+  const [step, setStep] = useState(0);
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStep((prev) => (prev + 1) % maxSteps);
+    }, interval);
+    return () => clearInterval(timer);
+  }, [maxSteps, interval]);
+
+  return children(step);
+};
+
+// --- MINIMAL VISUALIZATION COMPONENTS ---
+
+const MinimalFrame = ({ children }) => (
+  <div className="w-full max-w-2xl mx-auto my-10 bg-slate-50/50 rounded-3xl border border-slate-100 p-8 sm:p-12 min-h-[300px] flex items-center justify-center relative overflow-hidden transition-all hover:bg-slate-50">
+    {children}
+  </div>
+);
+
+// Sleek, minimal chromosome
+const Chromosome = ({ 
+  color = "bg-slate-300", 
+  pArm = "h-10", 
+  qArm = "h-16",
+  centromere = "bg-slate-200",
+  className = "",
+  gap = false
+}) => (
+  <div className={`flex flex-col items-center justify-center transition-all duration-1000 ${className}`}>
+    <div className={`w-5 rounded-full transition-all duration-1000 ease-in-out ${pArm} ${color}`} />
+    <div className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${gap ? 'my-2 opacity-0' : 'my-1 opacity-100'} ${centromere}`} />
+    <div className={`w-5 rounded-full transition-all duration-1000 ease-in-out ${qArm} ${color}`} />
+  </div>
+);
+
+const Visualizer = ({ chapterId }) => {
+  switch (chapterId) {
+    case 1: // Cell City
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={2000}>
+              {step => (
+                <div className="relative flex items-center justify-center w-64 h-64">
+                   <div className={`absolute border border-blue-100 rounded-full flex items-center justify-center transition-all duration-1000 ${step === 0 ? 'w-64 h-64 bg-blue-50/30' : 'w-56 h-56 bg-transparent'}`}>
+                      <div className={`absolute border border-blue-200 rounded-full flex items-center justify-center transition-all duration-1000 ${step === 0 ? 'w-32 h-32 bg-blue-50' : 'w-48 h-48 bg-blue-50/50'}`}>
+                         <Dna className={`w-12 h-12 text-blue-500 transition-all duration-1000 ${step === 0 ? 'opacity-50 scale-75' : 'opacity-100 scale-110 animate-pulse'}`} />
+                      </div>
+                   </div>
+                </div>
+              )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 2: // Meet the Chromosomes
+      return (
+        <MinimalFrame>
+           <div className="flex flex-col items-center gap-6">
+              <div className="grid grid-cols-8 gap-3 opacity-60">
+                 {Array.from({length: 22}).map((_, i) => (
+                    <div key={i} className="flex gap-1 justify-center items-end">
+                       <div className="w-1.5 h-6 bg-slate-400 rounded-full"></div>
+                       <div className="w-1.5 h-6 bg-slate-400 rounded-full"></div>
+                    </div>
+                 ))}
+                 {/* 23rd pair */}
+                 <div className="flex gap-1 justify-center items-end bg-indigo-50 px-2 py-1 rounded">
+                    <div className="w-1.5 h-6 bg-indigo-400 rounded-full"></div>
+                    <div className="w-1.5 h-4 bg-indigo-400 rounded-full"></div>
+                 </div>
+              </div>
+              <p className="text-xs font-semibold text-slate-400 tracking-[0.2em] uppercase">23 Chromosome Pairs</p>
+           </div>
+        </MinimalFrame>
+      );
+    case 3: // Anatomy
+      return (
+        <MinimalFrame>
+          <div className="flex items-center gap-12">
+            <Chromosome color="bg-purple-400" />
+            <div className="flex flex-col space-y-6">
+               <div className="flex items-center gap-4 text-sm font-medium text-slate-500"><div className="w-8 h-px bg-slate-200"></div>p arm</div>
+               <div className="flex items-center gap-4 text-sm font-medium text-slate-500"><div className="w-8 h-px bg-slate-200"></div>centromere</div>
+               <div className="flex items-center gap-4 text-sm font-medium text-slate-500"><div className="w-8 h-px bg-slate-200"></div>q arm</div>
+            </div>
+          </div>
+        </MinimalFrame>
+      );
+    case 4: // Sickness
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={1500}>
+             {step => (
+                <div className="flex justify-center items-center gap-16">
+                  <Chromosome color="bg-slate-300" className={step === 0 ? 'opacity-100 scale-100' : 'opacity-40 scale-95'} />
+                  <ArrowRightLeft className="text-slate-300 w-6 h-6" />
+                  <div className="relative">
+                     <Chromosome color="bg-rose-400" pArm="h-12" qArm="h-12" className={step === 1 ? 'opacity-100 scale-110' : 'opacity-0 scale-90'} />
+                     <Bug className={`absolute -top-4 -right-6 text-rose-500 w-6 h-6 transition-opacity duration-500 ${step === 1 ? 'opacity-100' : 'opacity-0'}`} />
+                  </div>
+                </div>
+             )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 5: // Deletion
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={2000}>
+              {step => (
+                <div className="flex items-center gap-16">
+                  <Chromosome color="bg-slate-300" />
+                  <ArrowRightLeft className="text-slate-300 w-6 h-6" />
+                  <div className="relative">
+                    <Chromosome color="bg-amber-400" qArm={step === 0 ? 'h-16 opacity-100' : 'h-0 opacity-0'} />
+                    <Scissors className={`absolute bottom-0 -right-8 w-6 h-6 text-slate-400 transition-opacity duration-500 ${step === 1 ? 'opacity-100' : 'opacity-0'}`} />
+                  </div>
+                </div>
+              )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 6: // Trisomy
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={2000}>
+              {step => (
+                 <div className="flex justify-center items-end gap-6">
+                    <Chromosome color="bg-emerald-400" />
+                    <Chromosome color="bg-emerald-400" />
+                    <Chromosome color="bg-emerald-400" className={`transition-all duration-1000 ${step === 1 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-8 scale-75'}`} />
+                 </div>
+              )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 7: // Monosomy
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={2000}>
+              {step => (
+                 <div className="flex justify-center items-center gap-6">
+                    <Chromosome color="bg-slate-400" />
+                    <Chromosome color="bg-slate-300" className={`transition-all duration-1000 ${step === 1 ? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`} />
+                 </div>
+              )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 8: // Translocation
+    case 10: 
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={3} interval={1500}>
+              {step => (
+                 <div className="flex items-center gap-16">
+                    {/* Chromosome 1 */}
+                    <div className="flex flex-col items-center justify-center">
+                       <div className={`w-5 h-10 rounded-full transition-all duration-700 ease-in-out ${step >= 2 ? 'bg-fuchsia-400' : 'bg-blue-400'} ${step === 1 ? '-translate-y-4' : ''}`} />
+                       <div className={`w-2.5 h-2.5 rounded-full transition-all duration-500 bg-slate-200 ${step === 1 ? 'opacity-0 my-2' : 'opacity-100 my-1'}`} />
+                       <div className={`w-5 h-16 rounded-full transition-all duration-700 bg-blue-400 ${step === 1 ? 'translate-y-2' : ''}`} />
+                    </div>
+                    {/* Chromosome 2 */}
+                    <div className="flex flex-col items-center justify-center">
+                       <div className={`w-5 h-10 rounded-full transition-all duration-700 ease-in-out ${step >= 2 ? 'bg-blue-400' : 'bg-fuchsia-400'} ${step === 1 ? '-translate-y-4' : ''}`} />
+                       <div className={`w-2.5 h-2.5 rounded-full transition-all duration-500 bg-slate-200 ${step === 1 ? 'opacity-0 my-2' : 'opacity-100 my-1'}`} />
+                       <div className={`w-5 h-16 rounded-full transition-all duration-700 bg-fuchsia-400 ${step === 1 ? 'translate-y-2' : ''}`} />
+                    </div>
+                 </div>
+              )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 9: // Medicines
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={2000}>
+             {step => (
+                <div className="flex flex-col items-center gap-8 relative">
+                   <div className="relative flex flex-col items-center justify-center">
+                      <div className={`w-5 h-10 rounded-full bg-rose-400 transition-all duration-1000 ${step === 1 ? 'opacity-30 scale-90' : ''}`} />
+                      <div className="w-2.5 h-2.5 bg-slate-200 rounded-full my-1" />
+                      <div className={`w-5 h-16 rounded-full bg-cyan-400 transition-all duration-1000 ${step === 1 ? 'opacity-30 scale-90' : ''}`} />
+                   </div>
+                   
+                   <div className={`absolute transition-all duration-1000 flex items-center justify-center ${step === 1 ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100' : '-top-12 left-1/2 -translate-x-1/2 scale-50 opacity-0'}`}>
+                      <div className="w-8 h-8 bg-white shadow-sm rounded-full flex items-center justify-center border border-slate-100">
+                         <Pill className="text-cyan-500 w-5 h-5" />
+                      </div>
+                   </div>
+                </div>
+             )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 11: // Inversion
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={2000}>
+              {step => (
+                 <div className="flex items-center gap-16">
+                    <Chromosome color="bg-teal-400" />
+                    <ArrowRightLeft className="text-slate-300 w-6 h-6" />
+                    <div className="flex flex-col items-center">
+                       <div className={`w-5 rounded-full bg-teal-400 h-10`} />
+                       <div className="w-2.5 h-2.5 bg-slate-200 rounded-full my-1" />
+                       <div className={`w-5 h-16 rounded-full flex overflow-hidden transition-all duration-1000 ${step === 1 ? 'rotate-180' : 'rotate-0'}`}>
+                          <div className="w-full h-full bg-teal-400 bg-gradient-to-b from-teal-400 to-indigo-400" />
+                       </div>
+                    </div>
+                 </div>
+              )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 12: // Detectives
+      return (
+         <MinimalFrame>
+            <div className="flex gap-12 w-full justify-center">
+               <div className="flex flex-col items-center gap-4 text-slate-400 hover:text-indigo-500 transition-colors cursor-default">
+                  <Search className="w-8 h-8" />
+                  <span className="text-xs font-medium tracking-wide">KARYOTYPE</span>
+               </div>
+               <div className="flex flex-col items-center gap-4 text-slate-400 hover:text-emerald-500 transition-colors cursor-default">
+                  <div className="relative w-8 h-8">
+                     <div className="absolute top-1 left-1 w-2.5 h-2.5 bg-emerald-400 rounded-full blur-[1px]"></div>
+                     <div className="absolute bottom-1 right-1 w-2.5 h-2.5 bg-rose-400 rounded-full blur-[1px]"></div>
+                  </div>
+                  <span className="text-xs font-medium tracking-wide">FISH</span>
+               </div>
+               <div className="flex flex-col items-center gap-4 text-slate-400 hover:text-blue-500 transition-colors cursor-default">
+                  <Activity className="w-8 h-8" />
+                  <span className="text-xs font-medium tracking-wide">PCR</span>
+               </div>
+            </div>
+         </MinimalFrame>
+      );
+    case 13: // Clones
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={4} interval={1000}>
+             {step => (
+                <div className="flex flex-col items-center gap-4">
+                   <div className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300" />
+                   
+                   <div className={`w-px h-6 bg-slate-200 transition-opacity duration-500 ${step >= 1 ? 'opacity-100' : 'opacity-0'}`} />
+                   
+                   <div className="flex gap-12 relative">
+                      <div className={`absolute top-0 left-1/2 w-[calc(100%-3rem)] h-px bg-slate-200 -translate-x-1/2 transition-opacity duration-500 ${step >= 2 ? 'opacity-100' : 'opacity-0'}`} />
+                      
+                      <div className={`flex flex-col items-center gap-4 transition-opacity duration-500 ${step >= 2 ? 'opacity-100' : 'opacity-0'}`}>
+                         <div className="w-px h-6 bg-slate-200" />
+                         <div className="w-10 h-10 rounded-full bg-violet-400/20 border border-violet-400 flex items-center justify-center text-xs text-violet-600 font-medium">C1</div>
+                      </div>
+                      
+                      <div className={`flex flex-col items-center gap-4 transition-opacity duration-500 ${step >= 3 ? 'opacity-100' : 'opacity-0'}`}>
+                         <div className="w-px h-6 bg-slate-200" />
+                         <div className="w-10 h-10 rounded-full bg-rose-400/20 border border-rose-400 flex items-center justify-center text-xs text-rose-600 font-medium">C2</div>
+                      </div>
+                   </div>
+                </div>
+             )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    case 14: // Complex
+      return (
+         <MinimalFrame>
+            <AnimatedScene maxSteps={2} interval={3000}>
+               {step => (
+                  <div className="relative w-64 h-64 flex items-center justify-center">
+                     <Chromosome color="bg-slate-400" pArm="h-6" className={`absolute transition-all duration-[3000ms] ${step === 1 ? 'translate-x-8 -translate-y-8 rotate-45' : '-translate-x-4 translate-y-4 -rotate-12'}`} />
+                     <Chromosome color="bg-orange-400" qArm="h-8" className={`absolute transition-all duration-[3000ms] ${step === 1 ? '-translate-x-12 translate-y-8 -rotate-45' : 'translate-x-12 -translate-y-4 rotate-90'}`} />
+                     <Chromosome color="bg-rose-400" className={`absolute transition-all duration-[3000ms] ${step === 1 ? 'translate-x-4 translate-y-12 rotate-180' : '-translate-x-8 -translate-y-12 rotate-0'}`} />
+                     <Flame className={`absolute text-rose-100 w-32 h-32 -z-10 transition-transform duration-[3000ms] ${step === 1 ? 'scale-110' : 'scale-90'}`} />
+                  </div>
+               )}
+            </AnimatedScene>
+         </MinimalFrame>
+      );
+    case 15: // Kingdoms
+      return (
+        <MinimalFrame>
+           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full">
+              {[
+                { name: 'CML', color: 'text-blue-500', bg: 'bg-blue-50' },
+                { name: 'APL', color: 'text-rose-500', bg: 'bg-rose-50' },
+                { name: 'AML', color: 'text-emerald-500', bg: 'bg-emerald-50' },
+                { name: 'CLL', color: 'text-violet-500', bg: 'bg-violet-50' }
+              ].map(kingdom => (
+                <div key={kingdom.name} className={`${kingdom.bg} rounded-2xl p-6 flex flex-col items-center justify-center border border-slate-100/50 hover:scale-105 transition-transform cursor-default`}>
+                   <Castle className={`w-8 h-8 ${kingdom.color} mb-3`} />
+                   <h4 className={`text-sm font-semibold ${kingdom.color}`}>{kingdom.name}</h4>
+                </div>
+              ))}
+           </div>
+        </MinimalFrame>
+      );
+    case 16: // Language
+      return (
+        <MinimalFrame>
+           <div className="flex flex-col items-center w-full max-w-md">
+              <div className="w-full bg-slate-800 rounded-xl p-4 flex items-center justify-center shadow-sm relative overflow-hidden group">
+                 <span className="font-mono text-sm sm:text-base text-slate-300 tracking-wider">
+                   <span className="text-emerald-400">46,XY</span>,
+                   <span className="text-rose-400">t(9;22)</span>(q34;q11)[20]
+                 </span>
+              </div>
+              <div className="w-px h-8 bg-slate-200 my-4" />
+              <div className="flex gap-4">
+                 <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Male, 46</span>
+                 <span className="text-xs font-medium text-rose-600 bg-rose-50 px-3 py-1 rounded-full">Philadelphia Translocation</span>
+              </div>
+           </div>
+        </MinimalFrame>
+      );
+    case 17: // Abstractor
+      return (
+        <MinimalFrame>
+           <div className="flex items-center gap-12">
+              <div className="relative">
+                 <FileText className="w-16 h-16 text-slate-300 stroke-[1]" />
+                 <Search className="absolute -bottom-2 -right-2 w-8 h-8 text-teal-500" />
+              </div>
+              <div className="flex flex-col gap-4">
+                 <div className="flex items-center gap-4">
+                   <div className="w-24 h-1.5 bg-slate-200 rounded-full" />
+                   <div className="w-2 h-2 rounded-full bg-teal-400" />
+                 </div>
+                 <div className="flex items-center gap-4">
+                   <div className="w-16 h-1.5 bg-slate-200 rounded-full" />
+                   <div className="w-2 h-2 rounded-full bg-rose-400" />
+                 </div>
+                 <div className="flex items-center gap-4">
+                   <div className="w-20 h-1.5 bg-slate-200 rounded-full" />
+                   <div className="w-2 h-2 rounded-full bg-teal-400" />
+                 </div>
+              </div>
+           </div>
+        </MinimalFrame>
+      );
+    case 18: // Lesson
+      return (
+        <MinimalFrame>
+           <div className="flex flex-col sm:flex-row items-center justify-center gap-12 w-full">
+              <div className="flex flex-col items-center gap-4">
+                 <Mountain className="w-10 h-10 text-slate-300" />
+                 <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500">Solid Tumor</div>
+                 <div className="text-xs text-slate-400">Mutation = Detail</div>
+              </div>
+              <div className="hidden sm:block w-px h-16 bg-slate-200" />
+              <div className="flex flex-col items-center gap-4">
+                 <Droplets className="w-10 h-10 text-amber-500" />
+                 <div className="text-[10px] uppercase tracking-wider font-semibold text-amber-600">Liquid Tumor</div>
+                 <div className="text-xs font-semibold text-amber-500">Cytogenetics = DEFINES</div>
+              </div>
+           </div>
+        </MinimalFrame>
+      );
+    case 19: // Final Message
+      return (
+        <MinimalFrame>
+           <AnimatedScene maxSteps={2} interval={2000}>
+              {step => (
+                 <div className="relative flex flex-col items-center justify-center h-48 w-full">
+                    <Heart className={`absolute w-32 h-32 text-rose-50 transition-all duration-1000 ${step === 1 ? 'scale-110 opacity-100' : 'scale-90 opacity-50'}`} />
+                    <div className="flex items-center gap-8 z-10">
+                       <Chromosome color="bg-slate-300" className={`transition-all duration-1000 ${step === 1 ? 'translate-x-2' : ''}`} />
+                       <Chromosome color="bg-slate-400" className={`transition-all duration-1000 ${step === 1 ? '-translate-x-2' : ''}`} />
+                    </div>
+                 </div>
+              )}
+           </AnimatedScene>
+        </MinimalFrame>
+      );
+    default:
+      return null;
+  }
+};
+
+
+// --- MAIN APP COMPONENT ---
+
+export default function App() {
+  const [activeChapterIndex, setActiveChapterIndex] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const mainScrollRef = useRef(null);
+
+  const activeChapter = storyData[activeChapterIndex];
+  const IconComponent = activeChapter.icon;
+
+  const navigateToChapter = (index) => {
+    setActiveChapterIndex(index);
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const nextChapter = () => {
+    if (activeChapterIndex < storyData.length - 1) {
+      navigateToChapter(activeChapterIndex + 1);
+    }
+  };
+
+  const prevChapter = () => {
+    if (activeChapterIndex > 0) {
+      navigateToChapter(activeChapterIndex - 1);
+    }
+  };
+
+  return (
+    <div className="flex h-screen bg-white font-sans text-slate-800 overflow-hidden">
+      
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/20 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Navigation */}
+      <aside className={`
+        fixed md:static inset-y-0 left-0 z-50 w-72 bg-slate-50 border-r border-slate-100
+        flex flex-col transform transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0 md:shadow-none'}
+      `}>
+        <div className="p-6 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <BookOpen className="w-5 h-5 text-slate-400" />
+            <h1 className="font-semibold text-sm tracking-widest uppercase text-slate-600">Cytogenetics</h1>
+          </div>
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-slate-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1 custom-scrollbar">
+          {storyData.map((chapter, index) => {
+            const ChapterIcon = chapter.icon;
+            const isActive = index === activeChapterIndex;
+            return (
+              <button
+                key={chapter.id}
+                onClick={() => {
+                  navigateToChapter(index);
+                  setIsSidebarOpen(false);
+                }}
+                className={`
+                  w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 transition-all duration-300
+                  ${isActive 
+                    ? `bg-white shadow-sm text-slate-800 font-medium translate-x-1` 
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                  }
+                `}
+              >
+                <div className={`
+                  flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-colors
+                  ${isActive ? `${chapter.color} text-white` : 'bg-transparent text-slate-400'}
+                `}>
+                  <ChapterIcon className="w-4 h-4" />
+                </div>
+                <div className="truncate">
+                  <span className="text-[10px] font-semibold text-slate-400 block mb-0.5 uppercase tracking-wider">
+                    {chapter.id === 19 ? 'Conclusion' : `Chapter ${chapter.id}`}
+                  </span>
+                  <span className="text-sm truncate block">{chapter.title}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main ref={mainScrollRef} className="flex-1 flex flex-col h-screen overflow-y-auto relative bg-white scroll-smooth">
+        
+        {/* Mobile Header */}
+        <header className="md:hidden bg-white/80 backdrop-blur-md p-4 flex items-center justify-between sticky top-0 z-30 border-b border-slate-100">
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-50"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <span className="font-semibold text-slate-600 text-xs uppercase tracking-widest">Story of Chromosomes</span>
+          <div className="w-9"></div> {/* Spacer for centering */}
+        </header>
+
+        {/* Content Container */}
+        <div className="flex-1 w-full max-w-3xl mx-auto p-6 md:p-12 lg:p-16 pb-40 animate-fade-in">
+          
+          <div className="mb-12 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className={`w-16 h-16 rounded-2xl ${activeChapter.color} bg-opacity-10 flex items-center justify-center shrink-0`}>
+               <IconComponent className={`w-8 h-8 ${activeChapter.color.replace('bg-', 'text-')}`} />
+            </div>
+            <div>
+               <p className="text-slate-400 font-medium tracking-widest text-xs uppercase mb-2">
+                 {activeChapter.id === 19 ? 'Conclusion' : `Chapter ${activeChapter.id}`}
+               </p>
+               <h2 className="text-3xl md:text-4xl font-semibold text-slate-800 tracking-tight leading-tight">
+                 {activeChapter.title}
+               </h2>
+            </div>
+          </div>
+
+          {/* Minimal Interactive Visualization Area */}
+          <Visualizer chapterId={activeChapter.id} />
+
+          {/* Story Text Render */}
+          <div className="space-y-8 mt-12">
+            {activeChapter.content.map((block, idx) => {
+              if (typeof block === 'string') {
+                return <p key={idx} className="text-lg md:text-xl leading-relaxed text-slate-600 font-light">{block}</p>;
+              }
+              
+              if (block.type === 'list') {
+                return (
+                  <ul key={idx} className="bg-slate-50/50 rounded-2xl p-6 md:p-8 space-y-4 list-none border border-slate-100">
+                    {block.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-4 text-lg text-slate-600 font-light">
+                        <span className={`w-2 h-2 mt-2.5 rounded-full ${activeChapter.color} shrink-0`}></span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              if (block.type === 'highlight') {
+                return (
+                  <div key={idx} className={`inline-block px-6 py-4 rounded-2xl font-medium text-xl ${activeChapter.color} bg-opacity-10 ${activeChapter.color.replace('bg-', 'text-')} my-2 border border-current/10`}>
+                    {block.text}
+                  </div>
+                );
+              }
+
+              if (block.type === 'title') {
+                return (
+                  <h3 key={idx} className="text-2xl md:text-3xl font-semibold text-slate-800 mt-12 mb-6 flex items-center gap-4 tracking-tight">
+                    <span className={`w-6 h-1 ${activeChapter.color} rounded-full`}></span>
+                    {block.text}
+                  </h3>
+                );
+              }
+
+              if (block.type === 'quote') {
+                return (
+                  <blockquote key={idx} className="text-2xl md:text-3xl font-serif italic text-slate-500 pl-6 border-l-4 border-slate-200 my-10 py-2">
+                    {block.text}
+                  </blockquote>
+                );
+              }
+
+              return null;
+            })}
+          </div>
+        </div>
+
+        {/* Bottom Navigation Bar */}
+        <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-white/80 backdrop-blur-md border-t border-slate-100 p-4 px-6 md:px-12 flex justify-between items-center z-20">
+          <button
+            onClick={prevChapter}
+            disabled={activeChapterIndex === 0}
+            className={`
+              flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all
+              ${activeChapterIndex === 0 
+                ? 'opacity-50 cursor-not-allowed text-slate-400' 
+                : 'text-slate-600 hover:bg-slate-50 active:scale-95'
+              }
+            `}
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="hidden sm:inline">Previous</span>
+          </button>
+          
+          <div className="flex gap-1">
+             {storyData.map((_, i) => (
+                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeChapterIndex ? 'w-6 bg-slate-400' : 'w-1.5 bg-slate-200 hidden sm:block'}`} />
+             ))}
+             <span className="sm:hidden text-xs font-medium text-slate-400">{activeChapterIndex + 1} / {storyData.length}</span>
+          </div>
+
+          <button
+            onClick={nextChapter}
+            disabled={activeChapterIndex === storyData.length - 1}
+            className={`
+              flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all
+              ${activeChapterIndex === storyData.length - 1
+                ? 'opacity-50 cursor-not-allowed text-slate-400' 
+                : `${activeChapter.color} text-white hover:brightness-110 active:scale-95 shadow-sm hover:shadow-md`
+              }
+            `}
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </main>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #e2e8f0;
+          border-radius: 20px;
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}} />
+    </div>
+  );
+}
